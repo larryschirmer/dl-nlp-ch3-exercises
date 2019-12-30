@@ -1,20 +1,30 @@
 import re
 import codecs
 import random
+import zipfile
+import en_core_web_sm
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 from keras.preprocessing.sequence import pad_sequences, skipgrams
 
 
-def tsne_plot(model, max_words=100, figure_name='tsne'):
+def tsne_plot(embedding, vocab, max_words=100, figure_name='tsne', pos=[]):
+    nlp = en_core_web_sm.load()
     labels = []
     tokens = []
 
     n = 0
-    for word in model:
+    for word, word_index in vocab.items():
+        if len(pos):
+            doc = nlp(word)
+            if len(doc):
+                doc = doc[0]
+                if doc.pos_ not in pos:
+                    continue
+            
         if n < max_words:
-            tokens.append(model[word])
+            tokens.append(embedding.get_weights()[0][word_index])
             labels.append(word)
             n += 1
 
@@ -194,4 +204,26 @@ def load_embedding(filename, vocab, embedding_dim):
         if embedding_vector is not None:
             embedding_matrix[word_index] = embedding_vector
 
+    return embedding_matrix
+
+
+def load_embedding_zipped(f, vocab, embedding_dimension):
+    embedding_index = {}
+    with zipfile.ZipFile(f) as z:
+        with z.open("glove.6B.100d.txt") as f:
+            n = 0
+            for line in f:
+                if n:
+                    values = line.decode().split()
+                    word = values[0]
+                    if word in vocab:  # only store words in current vocabulary
+                        coefs = np.asarray(values[1:], dtype='float32')
+                        embedding_index[word] = coefs
+                n += 1
+    z.close()
+    embedding_matrix = np.zeros((len(vocab) + 1, embedding_dimension))
+    for word, i in vocab.items():
+        embedding_vector = embedding_index.get(word)
+        if embedding_vector is not None:
+            embedding_matrix[i] = embedding_vector
     return embedding_matrix

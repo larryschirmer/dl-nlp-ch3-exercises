@@ -9,3 +9,9 @@ Scenario: Rather than use an embedding that was trained for a certain task (like
 
 yelp review data source:
 https://archive.ics.uci.edu/ml/datasets/Sentiment+Labelled+Sentences
+
+GloVe data source:
+https://nlp.stanford.edu/projects/glove/
+
+Install instructions:
+- to use `pos` with `tsne_plot`, run `python -m spacy download en_core_web_sm`
