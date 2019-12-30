@@ -1,8 +1,10 @@
 import re
 import codecs
+import random
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
-from keras.preprocessing.sequence import pad_sequences
+from keras.preprocessing.sequence import pad_sequences, skipgrams
 
 
 def tsne_plot(model, max_words=100, figure_name='tsne'):
@@ -124,3 +126,42 @@ def process_test_data(textFile, vocab, max_len):
     data = pad_sequences(data, maxlen=max_len, padding='post')
 
     return data, labels
+
+
+def process_data(textFile, window_size):
+    couples = []
+    labels = []
+    sentences = getLines(textFile)
+    vocab = dict()
+    create_vocabulary(vocab, sentences)
+    vocab_size = len(vocab)
+
+    for sentence in sentences:
+        words = []
+
+        for word in sentence.split(" "):
+            word = re.sub("[.,:;'\"!?()]+", "", word.lower())
+
+            if word != '':
+                words.append(vocab[word])
+
+        couple, label = skipgrams(words, vocab_size, window_size=window_size)
+        couples.extend(couple)
+        labels.extend(label)
+
+    return vocab, couples, labels
+
+
+def batch_generator(target, context, labels, batch_size):
+    batch_target = np.zeros((batch_size, 1))
+    batch_context = np.zeros((batch_size, 1))
+    batch_labels = np.zeros((batch_size, 1))
+
+    while True:
+        for batch_index in range(batch_size):
+            index = random.randint(0, len(target) - 1)
+            batch_target[batch_index] = target[index]
+            batch_context[batch_index] = context[index]
+            batch_labels[batch_index] = labels[index]
+
+        yield [batch_target, batch_context], [batch_labels]
