@@ -165,3 +165,33 @@ def batch_generator(target, context, labels, batch_size):
             batch_labels[batch_index] = labels[index]
 
         yield [batch_target, batch_context], [batch_labels]
+
+
+def load_embedding(filename, vocab, embedding_dim):
+    embedding_index = {}
+    f = open(filename)
+    n = 0
+
+    for line in f:
+        values = line.split()
+        word = values[0]
+
+        if word in vocab:
+            coefs = np.asarray(values[1:], dtype='float32')
+
+            if n:  # skip embedding header line
+                embedding_index[word] = coefs
+
+            n += 1
+
+    f.close()
+
+    embedding_matrix = np.zeros((len(vocab) + 1, embedding_dim))
+
+    for word, word_index in vocab.items():
+        embedding_vector = embedding_index.get(word)
+
+        if embedding_vector is not None:
+            embedding_matrix[word_index] = embedding_vector
+
+    return embedding_matrix

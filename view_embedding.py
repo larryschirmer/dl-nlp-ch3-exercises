@@ -1,6 +1,6 @@
 from gensim.models import KeyedVectors
 
-embedding_filepath = 'embedding_labeled.txt'
+embedding_filepath = 'pretrained-embedding_labeled.txt'
 
 w2v = KeyedVectors.load_word2vec_format(
     embedding_filepath, unicode_errors='ignore')
