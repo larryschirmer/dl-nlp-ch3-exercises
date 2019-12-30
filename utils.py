@@ -37,7 +37,7 @@ def tsne_plot(embedding, vocab, max_words=100, figure_name='tsne', pos=[]):
         x.append(value[0])
         y.append(value[1])
 
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(16, 16))
     for i in range(len(x)):
         plt.scatter(x[i], y[i])
         plt.annotate(labels[i],

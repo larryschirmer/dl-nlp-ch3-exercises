@@ -1,16 +1,17 @@
 from keras.models import Sequential
 from keras.layers import Embedding, Flatten, Dense, Dropout
-from utils import process_training_data, process_test_data, save_embedding, load_embedding
+from keras.optimizers import Adam
+from utils import process_training_data, process_test_data, save_embedding, load_embedding, tsne_plot
 
 # constants
 max_len = 100
 embedding_size = 100
 loss = 'binary_crossentropy'
-optimizer = 'adam'
+optimizer = Adam(learning_rate=0.0001)
 metrics = ['accuracy']
 train_filename = 'yelp_reviews_train.tsv'
 test_filename = 'yelp_reviews_test.tsv'
-pretrained_embedding = 'skipgram-embedding_labeled.txt'
+pretrained_embedding = 'glove-embedding_labeled.txt'
 
 # pre-process data
 data, labels, vocab = process_training_data(train_filename, max_len)
@@ -36,3 +37,5 @@ model.fit(data, labels, epochs=100, verbose=1, batch_size=32,
           shuffle=True, validation_data=(test_data, test_labels))
 
 save_embedding('pretrained-embedding_labeled.txt', embedding.get_weights()[0], vocab)
+tsne_plot(embedding, vocab, figure_name='pretrained-embedding_labeled',
+          max_words=200, pos=['ADJ', 'VERB', 'NOUN'])
