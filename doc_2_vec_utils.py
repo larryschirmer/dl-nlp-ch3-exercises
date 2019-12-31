@@ -70,7 +70,7 @@ def save_embedding(outputFile, weights, total_docs):
             f.write("\n")
 
 
-def process_data(input_data, window_size, output_legend_name="docs.legenda"):
+def process_data(input_data, window_size, output_legend_name="docs_legenda"):
     docs = getLines(input_data)
     vocab = dict()
     create_vocabulary(vocab, docs)
@@ -79,7 +79,7 @@ def process_data(input_data, window_size, output_legend_name="docs.legenda"):
     docids = []
     targets = []
 
-    f = open(output_legend_name, "w")
+    f = open(output_legend_name + ".txt", "w")
 
     for sentence in docs:
         f.write("%d %s\n" % (docid, sentence))
