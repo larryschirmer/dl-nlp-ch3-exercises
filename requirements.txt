@@ -68,7 +68,7 @@ termcolor==1.1.0
 thinc==7.3.1
 tqdm==4.41.0
 typed-ast==1.4.0
-urllib3==1.25.7
+urllib3==1.25.8
 wasabi==0.5.0
 Werkzeug==0.16.0
 wrapt==1.11.2
